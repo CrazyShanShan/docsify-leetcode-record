@@ -1,6 +1,6 @@
 * LeetCode
     * 周赛
-        *  [周赛228.md](docs/周赛228.md) 
+        *  [周赛228.md](docs/weekly/228)
     * 剑指offer
     * hot 100
 
