@@ -5,5 +5,7 @@
     * hot 100
 
 - java后端
+  - redis
+    -  [初识记录](docs/redis/introduction.md) 
 - Vue
 
