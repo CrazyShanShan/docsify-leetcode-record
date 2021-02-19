@@ -7,5 +7,6 @@
 - java后端
   - redis
     -  [初识记录](docs/redis/introduction.md) 
+    -  [《Redis设计与实现》阅读.md](docs/redis/《Redis设计与实现》阅读.md) 
 - Vue
 
