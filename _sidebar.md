@@ -1,6 +1,7 @@
 * LeetCode
     * 周赛
         *  [周赛228.md](docs/weekly/228)
+        *   [周赛229.md](docs/weekly/229.md) 
     * 剑指offer
     * hot 100
 
@@ -13,5 +14,6 @@
     -  [学习攻略｜如何才能学好并发编程？.md](docs/concurent/学习攻略｜如何才能学好并发编程？.md) 
     - 第一部分：并发理论基础（13）
       -  [01.md](docs/concurent/01.md) 
+      -  [02.md](docs/concurent/02.md) 
 - Vue
 
