@@ -258,7 +258,7 @@ zip 选项【-r】 【压缩后文件名】【文件或目录】
 
 范例： bunzip2 -k boduo.bz2
 
-​			tar -jvxf Janpan.tar.bz2
+​			tar -jvxf   Janpan.tar.bz2
 
 
 

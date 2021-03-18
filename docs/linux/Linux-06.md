@@ -160,11 +160,11 @@ lo:回环网卡，127.0.0.1
 
 范例： 
 
-Netstat -tlun   查看本机监听的端口
+**Netstat -tlun   查看本机监听的端口**
 
-netstat	-an 查看本机所有的网络连接
+**netstat	-an 查看本机所有的网络连接**
 
-netstat	-rn 查看本季路由表
+**netstat	-rn 查看本季路由表**
 
 
 
