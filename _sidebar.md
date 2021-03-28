@@ -6,6 +6,12 @@
     * hot 100
 
 - java后端
+  - 高性能MySQL
+    -  [学习记录-start](docs/mysql/01.md) 
+    -  [第4章 Schema与数据类型优化](docs/mysql/02.md) 
+    -  [第5章 创建高性能的索引](docs/mysql/03.md) 
+    -  [第1章 MysQL架构与历史](docs/mysql/04.md) 
+    -  [第6章 查询性能优化](docs/mysql/05.md) 
   - redis
     -  [初识记录](docs/redis/introduction.md) 
     -  [《Redis设计与实现》阅读.md](docs/redis/《Redis设计与实现》阅读.md) 
