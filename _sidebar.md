@@ -1,6 +1,11 @@
+* 积少成多
+    * 
 * LeetCode
     * DP
         -  [面试题 17.16. 按摩师.md](docs/leetcode/dp/面试题 17.16. 按摩师.md) 
+        -  [5. 最长回文子串.md](docs/leetcode/dp/5. 最长回文子串.md) 
+        -  [62. 不同路径.md](docs/leetcode/dp/62. 不同路径.md) 
+        -  [474. 一和零.md](docs/leetcode/dp/474. 一和零.md) 
     * 周赛
         *  [周赛228.md](docs/weekly/228)
         *   [周赛229.md](docs/weekly/229.md) 
