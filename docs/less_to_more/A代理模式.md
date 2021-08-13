@@ -214,6 +214,15 @@ public class XiaoMingProxy {
 }
 ```
 
+```
+后面也可以使用lambda表达式
+(proxy, method, args) -> {
+	
+}
+```
+
+
+
 
 
 4. 测试类
