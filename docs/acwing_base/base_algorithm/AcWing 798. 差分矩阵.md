@@ -1,7 +1,3 @@
-# 二维差分
-
-
-
 # 798. 差分矩阵
 
 URL：https://www.acwing.com/problem/content/800/
