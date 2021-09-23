@@ -78,7 +78,7 @@ class Main {
                     q[++tt] = a;
                     break;
                 case "pop" : hh++;  break;
-                case "empty" : if (hh <= tt) out.write("NO\n"); else out.write("YES\n");  break;
+                case "empty" : if (hh <= tt) out.write("NO\n"); else out.write("YES\n");  break;  
                 case "query" : out.write(q[hh]+"\n"); break;
             }
         }
