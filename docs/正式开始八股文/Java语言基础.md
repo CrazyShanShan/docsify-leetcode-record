@@ -41,7 +41,7 @@
 **final:**
 
 - 修饰类： 该类不能被继承，类中的方法默认被final修饰
-- 修饰方法： 该方法不能被子类重写
+- 修饰方法： 该方法不能被子类重写,但是可以被继承使用
 - 修饰变量：
   - 基本数据类型的变量：表示该值在被初始化后不能更改。必须初始化
   - 引用类型： 表示该引用在初始化后不能再指向其他对象。必须初始化
@@ -255,7 +255,318 @@ interface Person {
 
 **什么是反射？**
 
-在运行状态中，对于任何一个类，能够获取这个类的所有属性和方法，对于任何一个对象，能够调用它的任意一个属性和方法。这种动态获取类。
+在运行状态中，对于任何一个类，能够获取这个类的所有属性和方法，对于任何一个对象，能够调用它的任意一个属性和方法。这种动态获取类的内容和动态调用对象的方法称为反射机制。
+
+通过反射机制相关的API可以获取任何Java类的包括属性、方法、构造器、修饰符等信息。元素不必在JVM运行时进行确定，反射可以使得它们在运行时动态地进行创建和调用。
+
+在JDK中，主要由以下类来实现Java反射机制，这些类都位于Java.lang.reflect包中。
+
+- Class类： 代表一个类
+- Constructor类：代表类的构造方法
+- Field类：代表类的成员变量
+- Mehotd：代表列的方法
 
 
+
+### **反射可以用来干什么**
+
+- 在运行时判定任意一个对象所属的类
+- 在运行时创建对象
+- 在运行时判定一个类所具有的成员变量和方法
+- 在运行时调用任意一个对象的方法
+- **生成动态代理**
+
+### 反射的实现方式
+
+**获取Class对象的方式**
+
+```java
+ 1. Class c = Class.forName("com.mysql.jdbc.Driver.class");
+ 2. Clas c = 类名.class
+ 3. Class c = 对象名.getClass()；
+   //如果是基本类型的包装类，则可以通过包装类的Type属性来获得该包装类的Class对象
+ 4. Class<?> c = Integer.TYPE; 
+
+```
+
+<img src="../pictures/反射的一个简单实现.png" alt="image-20210824145531965" style="zoom:50%;" />
+
+**获取构造方法的方式**
+
+```java
+// 第一种方式
+Constructor[] contructors = classInfo.getConstructors();
+// 调用两个参数的构造方法
+constructors[0].newInstance(new Object[]{"Hello", 2019});
+// 调用一个参数的构造放啊
+constructors[1].newInstance(new Object[]{"Hello"});
+// 调用无参数的构造方法
+constructors[2].newInstance();
+
+// 第二种方式
+// 调用无参数构造方法
+Constructor constructor = classInfo.getConstructor();
+constructor.newInstance();
+// 调用一个参数的构造方法
+constucot = classInfo.getConstructor(new Class[]{String.class});
+constructor.newInstance(new Object[]{"Hello"});
+// 调用两个参数的构造方法
+constructor = classInfo.getCOnstructor(new Class[]{String.class, Integer.class});
+constructor.newInstance(new Object[]{"Hello", 2019});
+```
+
+**成员方法**
+
+```java
+// 调用无参数构造方法，生成实例对象
+Object obj = classInfo.getConstructor().newInstance();
+
+// 调用无参数成员函数
+Method method1 = classInfo.getMethod("fun1");
+// 通过实例对象进行方法的实例化
+method1.invoke(obj);
+
+//调用一个参数
+Method method2 = classInfo.getMethod("fun2", String.class);
+method2.invoke(obj, new Object[]{"Hello"});
+
+// 调用两个参数成员函数
+Method method3 = classInfo.getMethod("fun3", String.class, Integer.class);
+method3.invoke(obj, new Object[]{"Hello", 2019});
+```
+
+### 反射通过方法
+
+功能描述： 只要知道类名字，方法名字符串，方法参数值，运用反射机制就能执行该方法
+
+```java
+public static boolean process(String className, String funcName, Object[] para) throws Exception {
+  // 获取字节码对象
+  Class<?> classObj = Class.forName(className);
+  
+  // 通过para形成Class类中方法中的参数序列parameterTypes
+  // public Method getMethod(String name, Class<?>... parameterTypes)
+  Class[] parameterTypes = new Class[para.length];
+  for (int i = 0; i < para.length; i++) {
+    parameterTypes[i] = para[i].getClass();
+  }
+  
+  
+  // 使用无参数构造方法，获得实例对象
+  Object obj = classObj.getConstructor().newInstance();
+  
+  // 获取对象的方法信息
+  Method method = classObj.getMethod(funcName, paramterTypes);
+  // 调用invoke 方法执行
+  method.invoke(obj, para);
+  
+  return true;
+}
+```
+
+
+
+## 包装类与缓存
+
+### 装箱与拆箱
+
+```java
+// 装箱
+Integer a = Integer.valueOf(123);
+Integer a1 = 123;
+Integer in = new Integer("123");
+
+// 拆箱
+int a2 = a1; 
+int a2 = a1.intValue();
+```
+
+### 缓存机制
+
+- 整型、char类型所对应的包装类，在自动装箱时，对于-128-127之间的值会进行缓存处理，从而提高效率
+
+- **缓存的原理：**如果数据在-128-127这个区间内，则在类加载的时候就已经为该区间的每个数值创建了对象，并且把这256个对象都放在一个叫cache的数组中
+
+  ```java
+  public static Integer valueOf(int i) {
+  	if (i >= IntgerCache.low && i <= IntegrCache.high)
+  		return Integer.cache[i + (- IntegerCache.low)];
+  	return new Integer(i);.
+  }
+  ```
+
+- 整型的包装类型的缓存范围在【-128-127】之间，Character类的缓存范围在【0-127】之间。实现缓存机制的包装类只有Integer类可以改变缓存范围。别的都是固定的。
+
+- 当两个Integer类的数值在缓存范围内，会使用同一个Integer对象，通过原始哈希值可以验证
+- 当超出缓存范围，则是不同的Integer对象，通过==操作来比较的到false，因为内存地址不同。
+
+
+
+## String字符串
+
+### 赋值的两种方式
+
+- string str = "hello";
+  - 通过”创建对象的时候，如果字符串常量池存在该字符，直接返回该字符串对象在字符串常量池的地址，否则创建一个新的字符串对象并存储在字符串常量池。“
+- String str = new String("hello")
+  - JVM首先会先检查字符串常量池
+    - 如果该字符串已存在常量池中，那么不再在字符串常量池中创建该字符串对象，而 **直接在堆中复制该对象的副本**，然后将堆中对象的地址赋值给引用str；
+    - 如果该字符串不存在常量池中，就会实例化该字符串并且将其放到常量池中，然后在堆中复制该对象的副本，然后将堆中对象的地址赋值给引用str；
+- **区别**
+  - 存储位置不同：
+    - 直接String str = "hello"是存储在常量区的 **字符串常量池**中
+    - 而String str = new String("hello")是存储在堆中
+  - 创建时间不同：
+    - "hello"的方式是在 **编译阶段就创建**
+    - new String("hello")是在 **运行时才创建**
+
+### 字符串的连接
+
+```java
+String str = "a" + "b"; //纯常量连接，相当于在编译的阶段在常量池中创建了“ab”
+String str1 = "a";
+String str2 = str1 + "b"; // 变量+常量的操作，会使用StringBuilder的append方法进行拼接
+str == str2 // false
+str.eaquals(str2) // true
+
+```
+
+**intern**
+
+```java
+String hello = new String("Helloworld");
+String strIntern = new String("Hello") + new String("world");
+strIntern = strIntern // true
+```
+
+
+
+```java
+String hello = "Helloworld"
+String hello = new String("Helloworld");
+String strIntern = new String("Hello") + new String("world");
+strIntern = strIntern // false
+```
+
+
+
+intern()方法的初衷： 重用String对象，以节省内存消耗。
+
+intern()方法会首先检查字符串常量池中是否有“hello”这个字符串，如果存在，则返回这个字符串的引用，否则将这个字符串加入到字符串池中，然后再返回这个字符串的引用。
+
+<img src="../pictures/String.new-String()内存空间.png" alt="image-20210825185925872" style="zoom:50%;" />
+
+```java
+// 生成常量池中的“1”， 以及堆中字符串对象，s引用指向堆中字符串对象
+String s = new String("1");
+// intern()方法检查到常量池中有这个对象，返回字符串常量池中的引用
+// s.intern()的返回值指向字符串常量次中的“1”
+s.intern();
+// 字符串常量池中有“1”，则生成一个s2的引用指向 字符串常量池中的“1”对象
+String s2 = "1";
+
+// 这行代码在字符串常量池中生存“1”，并在堆空间中生成s3引用指向的对象（内容为“11”）
+// 注意，此时常量池中是没有“11”对象的。
+String s3 = new String("1") + new String("1");
+// 字符串常量池中没有“11”，将这个字符串加入到字符串常量池中，返回这个字符串的引用（在常量池中国）
+s3.intern();
+String s4 = "11";
+System.out.println(s3 == s4); // false;
+System.out.println(s3.intern() == s4); // true
+
+```
+
+
+
+
+
+### String a = "a" + new String("b")创建了几个对象？
+
+- 常量和常量拼接仍是常量，结果在常量池，只要有变量参与拼接，拼接结果就是变量，存放在堆中
+- 使用字面量时至创建一个常量池中的常量，使用new时如果超女两次中没有该值就呼自爱常量池中新创建
+
+### String、StringBUffer、StringBuilder
+
+- String 声明的是不可变对象，每次操作都会生成新的String对象，然后将指针指向新的String对象
+- 在经常改变字符串的内容的情况下最好不要使用String
+- StringBuffer是线程安全的，StringBuilfer是线程不安全的
+
+
+
+
+
+## Equals/hashCode
+
+### equals 和==
+
+- == 作用于基本数据类型，比较的是值，作用于对象，比较内存地址
+- equals自定义的方法，默认使用了==，。String实现了equals，比较的是值。
+
+### Java中对equals()方法和hashCode()方法的规定
+
+1. equals返回为true， hashCode相同。
+2. hashCode不同，equals返回false。
+3. 其他都确定
+
+### HashCode
+
+**什么是hashCode**
+
+- hashCode方法是从Object类继承过来的，Object类中的hashCode()方法（native），返回的是 **对象在内存中的地址转换成的int值。**如果对象没有重写hashCOde方法，任何对象的hashCode()方法的返回值都是不相等的。
+
+**为什么重写eqauls()方法的同时，必须重写hashCOde方法**
+
+- 比如在集合set中，往其中放入内容相同的对象，如果没有重写hashCode()方法，那么set中将会放入内容相同的对象。因为如果放入对象时，先调用hashCode()方法得到hashCode值，根据hashCode值计算位置，如果该位置有值，就调用equals()方法判断是否相同。
+
+
+
+## 序列化与反序列化
+
+### 定义
+
+序列化： 将java对象转化为 **字节序列** 的过程称为对象的序列化
+
+反序列化： 把 **字节序列** 恢复为java对象的过程称为对象的反序列化
+
+**实现方式：**
+
+- 所有序列化的类都必须实现Serializable接口，当进行序列化的时候，需要用到ObjectOutputStream里面的writeObject（）;当进行反序列化的时候，需要用到ObjectInputStream里面的readObject()方法。
+
+**序列化的特点：**
+
+- 序列化时，只对对象的状态进行保存，而不管对象的方法。
+- 当一个父类实现序列化时，子类自动实现序列化，不需要显示实现Serializable接口。
+- 当一个对象的实例变量引用了其他对象时，序列化该对象时，也把引用对象进行序列化
+- 对象中被static或者transient修改的变量，在序列化时其变量值不被保存。
+
+**序列化的好处：**
+
+- 实现了数据的持久化，即通过序列化可以把数据永久地保存到硬盘上。
+- 利用序列化实现远程通信，在网络中传送对象的字节序列。
+
+**注意事项：**
+
+1. **为什么要显示的声明serialVersionUID**
+
+- 提高程序的运行效率，如果没有显示声明则会序列化期间计算该值。
+- 防止java.io.InvaildClassException异常。如果没有提供，编译器会把对象的hashCode值座位serialVersionUID，如果加入新的成员遍历那个，则会发生变化，在反序列化的时候就会报错。
+
+2. **ArrayList和LinkedLIst能否序列化**
+
+- 都可以序列化，但是ArrayList把元素数组elementData声明为transient, 仅仅序列化已经保存的数据。
+- 可以通过自定义readObject,writeObject()完成数组元素的自定义序列化动作。
+
+## 泛型
+
+**定义：** 范型的本质是参数化类型，解决不确定对象具体类型的问题
+
+**泛型的好处：**
+
+- 类型安全，放置什么出来什么，不存在ClassCastException
+- 提升可读性，编码阶段显示知道泛型集合，范型方法等处理的对象类型
+- 代码复用，合并了同类型的处理代码
+
+### 泛型擦除
+
+泛型用于编译阶段，编译后的字节码文件不包含泛型类型信息，因为虚拟机没有泛型类型对象，所有对象都属于普通类。即泛型信息在编码阶段被擦除。
 
